@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brooklyn College Student Odyssey</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Playful & Pixelated Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        arcade: ['"Press Start 2P"', 'cursive'],
+                    },
+                    colors: {
+                        bc: {
+                            maroon: '#800000', // Brooklyn College Maroon
+                            gold: '#FFD700',   // Brooklyn College Gold
+                            dark: '#111827',
+                            sky: '#A5F3FC'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Retro pixel art border effects */
+        .arcade-border {
+            border: 4px solid #FFD700;
+            box-shadow: 0 0 0 4px #800000, 0 8px 16px rgba(0, 0, 0, 0.4);
+        }
+        .text-glow {
+            text-shadow: 2px 2px 0px #800000, 4px 4px 0px rgba(0,0,0,0.3);
+        }
+        .gold-glow {
+            text-shadow: 2px 2px 0px #FFD700;
+        }
+        /* Mobile touch controls custom look */
+        .touch-btn {
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        /* Hidden scrollbars */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-bc-dark text-gray-100 font-sans min-h-screen flex flex-col justify-between overflow-hidden">
+
+    <!-- Header bar with Brooklyn College styling -->
+    <header class="bg-bc-maroon border-b-4 border-bc-gold px-4 py-3 flex items-center justify-between shadow-lg z-10">
+        <div class="flex items-center space-x-3">
+            <span class="text-2xl md:text-3xl">🏫</span>
+            <div>
+                <h1 class="font-arcade text-xs md:text-sm text-bc-gold leading-tight tracking-wider">BC ODYSSEY</h1>
+                <p class="text-[9px] text-red-200 uppercase font-bold tracking-widest mt-0.5">Brooklyn College Platformer</p>
+            </div>
+        </div>
+        <div class="flex items-center space-x-2 font-arcade text-[10px] bg-black/40 px-3 py-1.5 rounded-md border border-bc-gold">
+            <span class="text-bc-gold">CAMPUS:</span>
+            <span id="header-level">THE QUAD</span>
+        </div>
+    </header>
+
+    <!-- Main Game Container -->
+    <main class="flex-1 flex flex-col items-center justify-center p-3 relative w-full max-w-6xl mx-auto">
+        
+        
+        <!-- START SCREEN OVERLAY -->
+        <div id="screen-start" class="absolute inset-0 bg-black/85 z-20 flex flex-col items-center justify-center p-6 text-center">
+            <div class="max-w-xl arcade-border bg-bc-maroon/95 p-6 md:p-8 rounded-lg flex flex-col items-center space-y-6">
+                <span class="text-5xl animate-bounce">🎓</span>
+                <h2 class="font-arcade text-xl md:text-2xl text-bc-gold text-glow">BROOKLYN COLLEGE</h2>
+                <h3 class="font-arcade text-xs md:text-sm text-white tracking-widest mt-1">STUDENT ODYSSEY</h3>
+                
+                <p class="text-xs text-gray-200 leading-relaxed max-w-md">
+                    Help a student navigate stressful semesters, dodge rowdy majors on campus, and jump over hazardous library late-fees to make it to the **Lily Pond Graduation Stage**!
+                </p>
+
+                <div class="border-t-2 border-dashed border-bc-gold/30 w-full pt-4 text-left">
+                    <h4 class="font-arcade text-[10px] text-bc-gold mb-2 text-center">CONTROLS:</h4>
+                    <div class="grid grid-cols-2 gap-3 text-[11px] text-gray-300 font-mono">
+                        <div class="flex items-center space-x-2">
+                            <kbd class="bg-gray-800 px-2 py-1 rounded text-white border border-gray-600">◀</kbd>
+                            <kbd class="bg-gray-800 px-2 py-1 rounded text-white border border-gray-600">▶</kbd>
+                            <span>Move Left/Right</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <kbd class="bg-gray-800 px-2.5 py-1 rounded text-white border border-gray-600">Space</kbd>
+                            <span>Jump</span>
+                        </div>
+                        <div class="flex items-center space-x-2 col-span-2">
+                            <kbd class="bg-gray-800 px-2 py-1 rounded text-white border border-gray-600">F</kbd>
+                            <span>Major Special Ability (Projectiles / Jump)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="transitionToSelect()" class="w-full py-4 bg-bc-gold hover:bg-yellow-400 text-bc-maroon font-arcade text-xs rounded-md shadow-md transform transition hover:scale-105 uppercase font-bold tracking-wider">
+                    Select Your Major
+                </button>
+            </div>
+        </div>
+
+        <!-- CHARACTER SELECT SCREEN OVERLAY -->
+        <div id="screen-select" class="absolute inset-0 bg-black/90 z-20 flex flex-col items-center justify-center p-4 text-center hidden">
+            <div class="max-w-3xl w-full arcade-border bg-bc-maroon/95 p-6 rounded-lg flex flex-col items-center space-y-6">
+                <h2 class="font-arcade text-sm md:text-base text-bc-gold text-glow">CHOOSE YOUR MAJOR</h2>
+                <p class="text-xs text-gray-300">Each major brings a unique passive modifier and special ability to tackle campus obstacles!</p>
+                
+                <!-- Majors Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
+                    <!-- CS Major Card -->
+                    <button onclick="selectMajor('cs')" class="group relative bg-slate-900 border-2 border-gray-700 hover:border-bc-gold p-4 rounded-xl flex flex-col items-center text-center transition-all duration-300 transform hover:-translate-y-1">
+                        <span class="text-4xl mb-2 group-hover:scale-110 transition">💻</span>
+                        <h4 class="font-arcade text-[10px] text-white">Comp. Sci</h4>
+                        <p class="text-[10px] text-gray-400 mt-2">Special: Shoots coding syntax bugs to defeat stressed student enemies.</p>
+                        <span class="absolute bottom-2 text-[9px] text-bc-gold font-mono font-bold tracking-wider">PROJECTILE ATTACK</span>
+                    </button>
+
+                    <!-- Art Major Card -->
+                    <button onclick="selectMajor('art')" class="group relative bg-slate-900 border-2 border-gray-700 hover:border-bc-gold p-4 rounded-xl flex flex-col items-center text-center transition-all duration-300 transform hover:-translate-y-1">
+                        <span class="text-4xl mb-2 group-hover:scale-110 transition">🎨</span>
+                        <h4 class="font-arcade text-[10px] text-white">Fine Arts</h4>
+                        <p class="text-[10px] text-gray-400 mt-2">Special: Artistic creative flair yields a powerful double jump ability.</p>
+                        <span class="absolute bottom-2 text-[9px] text-cyan-400 font-mono font-bold tracking-wider">DOUBLE JUMP</span>
+                    </button>
+
+                    <!-- Pre-Med Card -->
+                    <button onclick="selectMajor('med')" class="group relative bg-slate-900 border-2 border-gray-700 hover:border-bc-gold p-4 rounded-xl flex flex-col items-center text-center transition-all duration-300 transform hover:-translate-y-1">
+                        <span class="text-4xl mb-2 group-hover:scale-110 transition">🧬</span>
+                        <h4 class="font-arcade text-[10px] text-white">Pre-Med</h4>
+                        <p class="text-[10px] text-gray-400 mt-2">Special: Extreme endurance grants extra health points and faster recoveries.</p>
+                        <span class="absolute bottom-2 text-[9px] text-green-400 font-mono font-bold tracking-wider">+2 EXTRA LIFE HP</span>
+                    </button>
+
+                    <!-- Business Card -->
+                    <button onclick="selectMajor('biz')" class="group relative bg-slate-900 border-2 border-gray-700 hover:border-bc-gold p-4 rounded-xl flex flex-col items-center text-center transition-all duration-300 transform hover:-translate-y-1">
+                        <span class="text-4xl mb-2 group-hover:scale-110 transition">💼</span>
+                        <h4 class="font-arcade text-[10px] text-white">Finance</h4>
+                        <p class="text-[10px] text-gray-400 mt-2">Special: Collects double Campus Credits and gains score bonuses easily.</p>
+                        <span class="absolute bottom-2 text-[9px] text-yellow-400 font-mono font-bold tracking-wider">CREDIT MULTIPLIER</span>
+                    </button>
+                </div>
+
+                <div class="text-[10px] text-gray-400 italic">"Your Major defines your strategy!"</div>
+            </div>
+        </div>
+
+        <!-- GAME OVER OVERLAY -->
+        <div id="screen-game-over" class="absolute inset-0 bg-black/90 z-20 flex flex-col items-center justify-center p-6 text-center hidden">
+            <div class="max-w-md arcade-border bg-[#180000] p-8 rounded-lg flex flex-col items-center space-y-6">
+                <span class="text-5xl">🫠</span>
+                <h2 class="font-arcade text-xl text-red-500 tracking-wider">ACADEMIC PROBATION</h2>
+                <h3 class="font-arcade text-[10px] text-white tracking-widest mt-1">SEMESTER FAILED!</h3>
+                
+                <p class="text-xs text-gray-300">
+                    Your campus stress level peaked or you missed too many assignments! Don't drop out yet, try again!
+                </p>
+
+                <div class="bg-black/60 p-4 rounded border border-red-500/30 w-full font-mono text-xs text-left space-y-2">
+                    <p>🎓 Major: <span id="summary-major" class="text-bc-gold font-bold">None</span></p>
+                    <p>💳 Credits Collected: <span id="summary-credits" class="text-yellow-400 font-bold">0</span></p>
+                    <p>👾 Students Convinced: <span id="summary-defeated" class="text-cyan-400 font-bold">0</span></p>
+                </div>
+
+                <button onclick="restartGame()" class="w-full py-3 bg-red-600 hover:bg-red-500 text-white font-arcade text-xs rounded-md shadow transition uppercase">
+                    Register for Next Semester (Retry)
+                </button>
+            </div>
+        </div>
+
+        <!-- VICTORY OVERLAY -->
+        <div id="screen-victory" class="absolute inset-0 bg-black/90 z-20 flex flex-col items-center justify-center p-6 text-center hidden">
+            <div class="max-w-md arcade-border bg-gradient-to-b from-blue-900 to-bc-maroon p-8 rounded-lg flex flex-col items-center space-y-6">
+                <span class="text-5xl animate-bounce">🎓✨</span>
+                <h2 class="font-arcade text-xl text-bc-gold text-glow">SUMMA CUM LAUDE!</h2>
+                <h3 class="font-arcade text-[10px] text-white tracking-widest mt-1">GRADUATION SECURED!</h3>
+                
+                <p class="text-xs text-gray-200">
+                    Outstanding achievement! You navigated the Library quad, crossed the dangerous Lily Pond, and received your diploma with high honors!
+                </p>
+
+                <div class="bg-black/60 p-4 rounded border border-bc-gold/30 w-full font-mono text-xs text-left space-y-2">
+                    <p>🎓 Graduated in: <span id="victory-major" class="text-bc-gold font-bold">CS Major</span></p>
+                    <p>🌟 Final GPA Credits: <span id="victory-credits" class="text-yellow-400 font-bold">120 Credits</span></p>
+                    <p>👾 Semester Projects Done: <span id="victory-defeated" class="text-cyan-400 font-bold">5</span></p>
+                </div>
+
+                <div class="flex w-full space-x-2">
+                    <button onclick="restartGame()" class="flex-1 py-3 bg-bc-gold hover:bg-yellow-400 text-bc-maroon font-arcade text-xs rounded-md shadow transition uppercase font-bold">
+                        Study Another Major
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live HUD Status / Scores -->
+        <div class="w-full max-w-4xl bg-slate-900 border-2 border-gray-700 rounded-t-xl px-4 py-2 flex items-center justify-between text-xs font-arcade text-slate-300">
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-1">
+                    <span>❤️</span>
+                    <span id="hud-hp" class="text-red-400">3/3</span>
+                </div>
+                <div class="flex items-center space-x-1">
+                    <span>💳</span>
+                    <span id="hud-credits" class="text-yellow-400">0</span>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <div class="hidden sm:flex items-center space-x-1">
+                    <span class="text-bc-gold text-[9px]">MAJOR:</span>
+                    <span id="hud-major" class="text-white text-[9px] px-1.5 py-0.5 bg-bc-maroon rounded">CS</span>
+                </div>
+                <div class="flex items-center space-x-1 text-cyan-400">
+                    <span class="text-[9px]">LEVEL:</span>
+                    <span id="hud-stage" class="text-[9px]">1/3</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- GAME CANVAS WINDOW -->
+        <div class="relative w-full max-w-4xl aspect-[16/9] border-x-2 border-b-2 border-gray-700 bg-cyan-900 rounded-b-xl overflow-hidden shadow-2xl">
+            <canvas id="gameCanvas" class="block w-full h-full bg-[#1e293b]"></canvas>
+            
+            <!-- Pause Overlay Button -->
+            <button onclick="togglePause()" class="absolute top-3 right-3 bg-black/60 hover:bg-black/80 text-white rounded p-1.5 border border-gray-600 transition" title="Pause Game">
+                <i data-lucide="pause" id="btn-pause-icon" class="w-4 h-4"></i>
+            </button>
+            
+            <!-- Stencil screen guides for mobile touch -->
+            <div id="mobile-overlay" class="absolute inset-0 pointer-events-none flex flex-col justify-end p-4 md:hidden">
+                <!-- Simple aesthetic guide to notify user of controls -->
+            </div>
+        </div>
+
+        <!-- TOUCH CONTROLS (Only visible/interactable on touch devices, or just hidden on large viewports) -->
+        <div class="w-full max-w-4xl mt-3 grid grid-cols-12 gap-3 p-2 bg-slate-900/80 border border-gray-800 rounded-xl md:hidden">
+            <!-- Left/Right Direction D-pad -->
+            <div class="col-span-5 flex items-center justify-around">
+                <button id="ctrl-left" class="touch-btn w-14 h-14 bg-slate-800 hover:bg-slate-700 active:bg-bc-gold border-2 border-gray-600 text-white font-bold text-2xl rounded-xl flex items-center justify-center shadow">
+                    ◀
+                </button>
+                <button id="ctrl-right" class="touch-btn w-14 h-14 bg-slate-800 hover:bg-slate-700 active:bg-bc-gold border-2 border-gray-600 text-white font-bold text-2xl rounded-xl flex items-center justify-center shadow">
+                    ▶
+                </button>
+            </div>
+            <!-- Blank Spacer -->
+            <div class="col-span-1"></div>
+            <!-- Action Buttons -->
+            <div class="col-span-6 flex items-center justify-end space-x-4">
+                <!-- Jump button -->
+                <button id="ctrl-jump" class="touch-btn w-16 h-14 bg-slate-800 hover:bg-slate-700 active:bg-bc-gold border-2 border-gray-600 text-white font-arcade text-[9px] rounded-xl flex flex-col items-center justify-center shadow">
+                    <span>JUMP</span>
+                    <span class="text-[14px] mt-1">▲</span>
+                </button>
+                <!-- Special Action F button -->
+                <button id="ctrl-special" class="touch-btn w-16 h-14 bg-bc-maroon border-2 border-bc-gold text-bc-gold font-arcade text-[9px] rounded-xl flex flex-col items-center justify-center shadow">
+                    <span id="ctrl-special-label">SKILL</span>
+                    <span class="text-xs font-semibold text-white mt-1">F</span>
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer Campus Map/Info -->
+    <footer class="bg-slate-950 text-gray-400 py-3 text-center text-[10px] border-t border-gray-800 z-10 font-mono">
+        <p>© 2026 Brooklyn College Student Odyssey. Handcrafted Georgian clock-tower vectors using HTML5 Canvas CanvasRenderingContext2D.</p>
+    </footer>
+
+    <script>
+        // Setup Canvas and Context
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Set virtual resolution matching beautiful pixel ratios (16:9)
+        const VIRTUAL_WIDTH = 960;
+        const VIRTUAL_HEIGHT = 540;
+        
+        // Ensure accurate scaling without blurry pixels
+        canvas.width = VIRTUAL_WIDTH;
+        canvas.height = VIRTUAL_HEIGHT;
+
+        // Sound Synthesis utilizing Web Audio API
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playSynthSound(type) {
+            try {
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                if (type === 'jump') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(600, audioCtx.currentTime + 0.15);
+                    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.15);
+                } else if (type === 'coin') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+                    osc.frequency.setValueAtTime(1200, audioCtx.currentTime + 0.08);
+                    gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.2);
+                } else if (type === 'hit') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(60, audioCtx.currentTime + 0.2);
+                    gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.2);
+                } else if (type === 'shoot') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(110, audioCtx.currentTime + 0.1);
+                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.1);
+                } else if (type === 'victory') {
+                    // Quick celebratory fanfare
+                    const notes = [523.25, 659.25, 783.99, 1046.50]; // C E G C
+                    notes.forEach((freq, idx) => {
+                        const o = audioCtx.createOscillator();
+                        const g = audioCtx.createGain();
+                        o.connect(g);
+                        g.connect(audioCtx.destination);
+                        o.type = 'square';
+                        o.frequency.setValueAtTime(freq, audioCtx.currentTime + idx * 0.1);
+                        g.gain.setValueAtTime(0.08, audioCtx.currentTime + idx * 0.1);
+                        g.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + idx * 0.1 + 0.18);
+                        o.start(audioCtx.currentTime + idx * 0.1);
+                        o.stop(audioCtx.currentTime + idx * 0.1 + 0.2);
+                    });
+                }
+            } catch(e) {
+                // Audio Context auto-play restrictions or missing hardware API safe guard
+            }
+        }
+
+        // Global Game Configuration
+        let gameState = 'start'; // start, select, playing, paused, game-over, victory
+        let selectedMajor = 'cs'; // cs, art, med, biz
+        let currentLevelIndex = 0; // 0: The Quad, 1: Lily Pond, 2: Boylan Stage
+        let score = 0; // Cumulative credits
+        let defeatedCount = 0; // Cumulative student majors convinced to bypass
+
+        // Physics constants
+        const GRAVITY = 0.55;
+        const FRICTION = 0.85;
+
+        // Player instance model
+        const player = {
+            x: 100,
+            y: 350,
+            width: 32,
+            height: 48,
+            vx: 0,
+            vy: 0,
+            speed: 5.5,
+            jumpForce: -13.5,
+            isGrounded: false,
+            doubleJumpAvailable: false,
+            lives: 3,
+            maxLives: 3,
+            invincibleFrames: 0,
+            facingLeft: false,
+            activeAbilityCooldown: 0,
+            majorSkillName: 'N/A'
+        };
+
+        // Game lists
+        let platforms = [];
+        let backgroundLayers = [];
+        let coins = [];
+        let enemies = [];
+        let projectiles = [];
+        let particles = [];
+        let diplomaGoal = null;
+
+        // Key states
+        const keys = {
+            left: false,
+            right: false,
+            up: false,
+            f: false
+        };
+
+        const MAJORS_DB = {
+            cs: {
+                name: 'Comp. Sci',
+                lives: 3,
+                bonusSpeed: 0,
+                skill: 'COMPILE_PROJECTILE',
+                skillLabel: 'CODE',
+                color: '#60a5fa' // blue-400
+            },
+            art: {
+                name: 'Fine Arts',
+                lives: 3,
+                bonusSpeed: 0.5,
+                skill: 'DOUBLE_JUMP',
+                skillLabel: 'PAINT',
+                color: '#f43f5e' // rose-500
+            },
+            med: {
+                name: 'Pre-Med',
+                lives: 5,
+                bonusSpeed: -0.3,
+                skill: 'REGEN_PASSIVE',
+                skillLabel: 'BANDAGE',
+                color: '#10b981' // emerald-500
+            },
+            biz: {
+                name: 'Finance',
+                lives: 3,
+                bonusSpeed: 0.2,
+                skill: 'CREDIT_MAGNET',
+                skillLabel: 'EARN',
+                color: '#eab308' // yellow-500
+            }
+        };
+
+        // Parallax background templates
+        function initBackgroundLayers() {
+            backgroundLayers = [
+                // Sky gradient / Moon background handled by direct canvas fill
+                {
+                    // Far backdrop (Library tower, skyline)
+                    scrollSpeed: 0.1,
+                    draw: function(offset) {
+                        ctx.save();
+                        ctx.fillStyle = '#1e1b4b'; // Deep violet campus night
+                        ctx.fillRect(0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
+                        
+                        // Draw moon
+                        ctx.fillStyle = '#fef08a';
+                        ctx.shadowBlur = 20;
+                        ctx.shadowColor = '#eab308';
+                        ctx.beginPath();
+                        ctx.arc(150, 100, 45, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.shadowBlur = 0; // Reset
+
+                        // Draw stylized clouds
+                        ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+                        ctx.beginPath();
+                        ctx.arc(400 - (offset * 0.02) % 400, 120, 30, 0, Math.PI * 2);
+                        ctx.arc(440 - (offset * 0.02) % 400, 110, 40, 0, Math.PI * 2);
+                        ctx.arc(480 - (offset * 0.02) % 400, 120, 30, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.restore();
+                    }
+                },
+                {
+                    // Middle backdrop (Iconic Brooklyn College LaGuardia Library Clock Tower and Academic Buildings)
+                    scrollSpeed: 0.35,
+                    draw: function(offset) {
+                        ctx.save();
+                        // Draw several campus silhouettes
+                        ctx.fillStyle = '#2d253f'; // Darkened reddish-maroon shadow
+                        
+                        const leftPos = 400 - (offset * 0.35);
+                        
+                        // Draw LaGuardia Library Georgian Clock Tower
+                        // Base structure
+                        ctx.fillRect(leftPos, 200, 90, 250);
+                        ctx.fillRect(leftPos - 15, 410, 120, 40);
+                        
+                        // Middle spire tier
+                        ctx.fillStyle = '#4c3f5e';
+                        ctx.fillRect(leftPos + 10, 140, 70, 60);
+                        // Pillars inside spire (drawn procedurally)
+                        ctx.fillStyle = '#1e1b4b';
+                        ctx.fillRect(leftPos + 22, 145, 8, 50);
+                        ctx.fillRect(leftPos + 41, 145, 8, 50);
+                        ctx.fillRect(leftPos + 60, 145, 8, 50);
+
+                        // Clock face tier
+                        ctx.fillStyle = '#2d253f';
+                        ctx.fillRect(leftPos + 20, 80, 50, 60);
+                        
+                        // Clock dial (Gold circle)
+                        ctx.fillStyle = '#eab308';
+                        ctx.beginPath();
+                        ctx.arc(leftPos + 45, 110, 12, 0, Math.PI * 2);
+                        ctx.fill();
+                        
+                        // Small black hands on the clock
+                        ctx.strokeStyle = '#1e1b4b';
+                        ctx.lineWidth = 2.5;
+                        ctx.beginPath();
+                        ctx.moveTo(leftPos + 45, 110);
+                        ctx.lineTo(leftPos + 45, 102);
+                        ctx.moveTo(leftPos + 45, 110);
+                        ctx.lineTo(leftPos + 51, 110);
+                        ctx.stroke();
+
+                        // Dome top
+                        ctx.fillStyle = '#eab308'; // Golden Dome
+                        ctx.beginPath();
+                        ctx.arc(leftPos + 45, 80, 25, Math.PI, 0, false);
+                        ctx.fill();
+                        
+                        // Small spire pin
+                        ctx.strokeStyle = '#eab308';
+                        ctx.lineWidth = 3;
+                        ctx.beginPath();
+                        ctx.moveTo(leftPos + 45, 55);
+                        ctx.lineTo(leftPos + 45, 30);
+                        ctx.stroke();
+
+                        // Additional academic building brick facades nearby
+                        ctx.fillStyle = '#1e1b4b';
+                        ctx.fillRect(leftPos - 300, 320, 200, 130);
+                        ctx.fillRect(leftPos + 180, 300, 220, 150);
+                        
+                        ctx.restore();
+                    }
+                },
+                {
+                    // Foreground (Quad Trees & Brick Walls, Lily Pond edges)
+                    scrollSpeed: 0.6,
+                    draw: function(offset) {
+                        ctx.save();
+                        ctx.fillStyle = '#3f3151'; // Closest dark layer
+                        
+                        // Draw some trees
+                        for (let i = 0; i < 4; i++) {
+                            const x = (i * 350) - (offset * 0.6) % 1200;
+                            
+                            // Trunk
+                            ctx.fillStyle = '#1e152d';
+                            ctx.fillRect(x + 100, 330, 12, 120);
+                            
+                            // Leaves
+                            ctx.fillStyle = '#22543d';
+                            ctx.beginPath();
+                            ctx.arc(x + 106, 310, 40, 0, Math.PI * 2);
+                            ctx.arc(x + 86, 290, 35, 0, Math.PI * 2);
+                            ctx.arc(x + 126, 290, 35, 0, Math.PI * 2);
+                            ctx.fill();
+                        }
+                        ctx.restore();
+                    }
+                }
+            ];
+        }
+
+        const LEVELS = [
+            {
+                name: "THE QUAD",
+                bgColor: "#0f172a",
+                groundColor: "#475569",
+                length: 2200,
+                init: function() {
+                    // Create beautiful brick platforms of BC style
+                    platforms = [
+                        // Ground level blocks
+                        { x: 0, y: 480, width: 800, height: 60, type: 'brick' },
+                        { x: 920, y: 480, width: 600, height: 60, type: 'brick' },
+                        { x: 1600, y: 480, width: 700, height: 60, type: 'brick' },
+                        
+                        // Floating library book stacks (platforms)
+                        { x: 250, y: 380, width: 140, height: 20, type: 'book' },
+                        { x: 450, y: 300, width: 160, height: 20, type: 'book' },
+                        { x: 680, y: 380, width: 120, height: 20, type: 'book' },
+                        
+                        { x: 1020, y: 360, width: 150, height: 20, type: 'concrete' },
+                        { x: 1250, y: 280, width: 150, height: 20, type: 'concrete' },
+                        { x: 1450, y: 360, width: 120, height: 20, type: 'concrete' },
+                        
+                        { x: 1700, y: 380, width: 130, height: 20, type: 'brick' },
+                        { x: 1900, y: 290, width: 160, height: 20, type: 'brick' }
+                    ];
+
+                    // Campus IDs (Coins to collect)
+                    coins = [
+                        { x: 320, y: 330, collected: false, value: 10 },
+                        { x: 530, y: 250, collected: false, value: 10 },
+                        { x: 740, y: 330, collected: false, value: 10 },
+                        { x: 1100, y: 300, collected: false, value: 10 },
+                        { x: 1320, y: 220, collected: false, value: 20 }, // High value
+                        { x: 1800, y: 330, collected: false, value: 10 },
+                        { x: 1980, y: 240, collected: false, value: 10 }
+                    ];
+
+                    // Major-themed student enemies
+                    enemies = [
+                        // Film student (carries film reels)
+                        { x: 550, y: 432, width: 32, height: 48, speed: 1.5, minX: 420, maxX: 700, type: 'film', hp: 1 },
+                        // Philosophy student (shoots existential questions)
+                        { x: 1150, y: 432, width: 32, height: 48, speed: 1.0, minX: 1000, maxX: 1350, type: 'philosophy', hp: 2 },
+                        // Chemistry major (throws hazardous potion flasks)
+                        { x: 1850, y: 432, width: 32, height: 48, speed: 1.8, minX: 1700, maxX: 2000, type: 'chemistry', hp: 1 }
+                    ];
+
+                    // Goal - Stage Gateway
+                    diplomaGoal = { x: 2150, y: 400, width: 45, height: 80, text: "ROOSEVELT HALL" };
+                }
+            },
+            {
+                name: "THE LILY POND",
+                bgColor: "#082f49",
+                groundColor: "#0284c7",
+                length: 2400,
+                init: function() {
+                    // Tricky water/lily pad leaps
+                    platforms = [
+                        { x: 0, y: 480, width: 400, height: 60, type: 'brick' },
+                        // Lily pads floating on Lily Pond (dangerous gaps!)
+                        { x: 500, y: 440, width: 90, height: 15, type: 'lily' },
+                        { x: 680, y: 390, width: 90, height: 15, type: 'lily' },
+                        { x: 860, y: 430, width: 90, height: 15, type: 'lily' },
+                        { x: 1050, y: 480, width: 300, height: 60, type: 'concrete' }, // Island
+                        { x: 1150, y: 360, width: 100, height: 20, type: 'wood' },
+                        
+                        { x: 1450, y: 420, width: 95, height: 15, type: 'lily' },
+                        { x: 1650, y: 370, width: 95, height: 15, type: 'lily' },
+                        { x: 1850, y: 410, width: 95, height: 15, type: 'lily' },
+                        
+                        { x: 2050, y: 480, width: 400, height: 60, type: 'brick' }
+                    ];
+
+                    coins = [
+                        { x: 545, y: 390, collected: false, value: 10 },
+                        { x: 725, y: 340, collected: false, value: 10 },
+                        { x: 905, y: 380, collected: false, value: 10 },
+                        { x: 1200, y: 310, collected: false, value: 20 },
+                        { x: 1495, y: 370, collected: false, value: 10 },
+                        { x: 1695, y: 320, collected: false, value: 10 },
+                        { x: 1895, y: 360, collected: false, value: 10 }
+                    ];
+
+                    enemies = [
+                        // Biology Major (bounces using giant frogs / dropping cells)
+                        { x: 1100, y: 432, width: 32, height: 48, speed: 2.2, minX: 1060, maxX: 1300, type: 'biology', hp: 2 },
+                        // Chemistry Major on the far bank
+                        { x: 2150, y: 432, width: 32, height: 48, speed: 1.5, minX: 2050, maxX: 2300, type: 'chemistry', hp: 2 }
+                    ];
+
+                    diplomaGoal = { x: 2300, y: 400, width: 45, height: 80, text: "BOYLAN HALL" };
+                }
+            },
+            {
+                name: "GRADUATION DAY",
+                bgColor: "#1e1b4b",
+                groundColor: "#800000",
+                length: 2000,
+                init: function() {
+                    // Platform steps to the ultimate diploma stage
+                    platforms = [
+                        { x: 0, y: 480, width: 500, height: 60, type: 'brick' },
+                        { x: 600, y: 400, width: 140, height: 20, type: 'wood' },
+                        { x: 800, y: 320, width: 140, height: 20, type: 'wood' },
+                        { x: 1000, y: 240, width: 140, height: 20, type: 'wood' },
+                        
+                        // Large podium
+                        { x: 1300, y: 450, width: 700, height: 90, type: 'podium' }
+                    ];
+
+                    coins = [
+                        { x: 670, y: 350, collected: false, value: 20 },
+                        { x: 870, y: 270, collected: false, value: 20 },
+                        { x: 1070, y: 190, collected: false, value: 30 }
+                    ];
+
+                    // Mini-Boss and stress hurdles: All majors merge to test you
+                    enemies = [
+                        { x: 250, y: 432, width: 32, height: 48, speed: 1.2, minX: 100, maxX: 450, type: 'philosophy', hp: 2 },
+                        { x: 1450, y: 402, width: 32, height: 48, speed: 3.0, minX: 1350, maxX: 1650, type: 'biology', hp: 1 },
+                        { x: 1750, y: 402, width: 32, height: 48, speed: 2.0, minX: 1650, maxX: 1900, type: 'chemistry', hp: 3 }
+                    ];
+
+                    // Golden Diploma Cylinder directly on stage podium
+                    diplomaGoal = { x: 1850, y: 370, width: 50, height: 80, text: "GRADUATION!", isUltimate: true };
+                }
+            }
+        ];
+
+        function transitionToSelect() {
+            document.getElementById('screen-start').classList.add('hidden');
+            document.getElementById('screen-select').classList.remove('hidden');
+            playSynthSound('coin');
+        }
+
+        function selectMajor(majorKey) {
+            selectedMajor = majorKey;
+            const config = MAJORS_DB[majorKey];
+            
+            // Apply major modifiers to player
+            player.lives = config.lives;
+            player.maxLives = config.lives;
+            player.speed = 5.5 + config.bonusSpeed;
+            player.majorSkillName = config.skill;
+
+            // UI adjustments
+            document.getElementById('hud-major').innerText = config.name;
+            document.getElementById('hud-major').style.backgroundColor = config.color;
+            document.getElementById('ctrl-special-label').innerText = config.skillLabel;
+
+            // Start game
+            document.getElementById('screen-select').classList.add('hidden');
+            gameState = 'playing';
+            
+            // Initialize game state variables
+            score = 0;
+            defeatedCount = 0;
+            currentLevelIndex = 0;
+            
+            loadLevel(currentLevelIndex);
+            playSynthSound('victory');
+        }
+
+        function loadLevel(index) {
+            currentLevelIndex = index;
+            const lvl = LEVELS[index];
+            lvl.init();
+
+            // Place player at start
+            player.x = 100;
+            player.y = 350;
+            player.vx = 0;
+            player.vy = 0;
+            player.invincibleFrames = 60; // Spawn shield
+
+            // Clear extra transient arrays
+            projectiles = [];
+            particles = [];
+
+            // Update HUD
+            document.getElementById('header-level').innerText = lvl.name;
+            document.getElementById('hud-stage').innerText = `${index + 1}/3`;
+            updateHUD();
+
+            initBackgroundLayers();
+        }
+
+        function updateHUD() {
+            document.getElementById('hud-hp').innerText = `${player.lives}/${player.maxLives}`;
+            document.getElementById('hud-credits').innerText = score;
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (gameState !== 'playing') return;
+            switch(e.key.toLowerCase()) {
+                case 'arrowleft':
+                case 'a':
+                    keys.left = true;
+                    player.facingLeft = true;
+                    break;
+                case 'arrowright':
+                case 'd':
+                    keys.right = true;
+                    player.facingLeft = false;
+                    break;
+                case ' ':
+                case 'arrowup':
+                case 'w':
+                    if (!keys.up) {
+                        keys.up = true;
+                        handleJump();
+                    }
+                    break;
+                case 'f':
+                case 'x':
+                    if (!keys.f) {
+                        keys.f = true;
+                        triggerMajorAbility();
+                    }
+                    break;
+            }
+        });
+
+        window.addEventListener('keyup', (e) => {
+            switch(e.key.toLowerCase()) {
+                case 'arrowleft':
+                case 'a':
+                    keys.left = false;
+                    break;
+                case 'arrowright':
+                case 'd':
+                    keys.right = false;
+                    break;
+                case ' ':
+                case 'arrowup':
+                case 'w':
+                    keys.up = false;
+                    break;
+                case 'f':
+                case 'x':
+                    keys.f = false;
+                    break;
+            }
+        });
+
+        function setupMobileControls() {
+            const bindTouch = (elemId, keyMap) => {
+                const el = document.getElementById(elemId);
+                if (!el) return;
+                
+                el.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    if (keyMap === 'left') { keys.left = true; player.facingLeft = true; }
+                    if (keyMap === 'right') { keys.right = true; player.facingLeft = false; }
+                    if (keyMap === 'up') { handleJump(); }
+                    if (keyMap === 'f') { triggerMajorAbility(); }
+                });
+
+                el.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    if (keyMap === 'left') keys.left = false;
+                    if (keyMap === 'right') keys.right = false;
+                });
+            };
+
+            bindTouch('ctrl-left', 'left');
+            bindTouch('ctrl-right', 'right');
+            bindTouch('ctrl-jump', 'up');
+            bindTouch('ctrl-special', 'f');
+        }
+
+        function handleJump() {
+            if (player.isGrounded) {
+                player.vy = player.jumpForce;
+                player.isGrounded = false;
+                playSynthSound('jump');
+                createBounceParticles(player.x + player.width/2, player.y + player.height, '#94a3b8');
+                
+                // Set double jump availability if Art major
+                if (selectedMajor === 'art') {
+                    player.doubleJumpAvailable = true;
+                }
+            } else if (selectedMajor === 'art' && player.doubleJumpAvailable) {
+                // Secondary Art Double Jump!
+                player.vy = player.jumpForce * 0.9;
+                player.doubleJumpAvailable = false;
+                playSynthSound('jump');
+                // Sparkle double jump paint splash
+                createBounceParticles(player.x + player.width/2, player.y + player.height/2, '#f43f5e');
+            }
+        }
+
+        function triggerMajorAbility() {
+            if (player.activeAbilityCooldown > 0) return;
+
+            if (selectedMajor === 'cs') {
+                // Shoot code compilation error projectile
+                const pDir = player.facingLeft ? -1 : 1;
+                projectiles.push({
+                    x: player.facingLeft ? player.x - 10 : player.x + player.width + 10,
+                    y: player.y + player.height / 2 - 4,
+                    width: 24,
+                    height: 12,
+                    vx: pDir * 9,
+                    type: 'code',
+                    text: Math.random() > 0.5 ? '0' : '1',
+                    color: '#60a5fa'
+                });
+                playSynthSound('shoot');
+                player.activeAbilityCooldown = 20; // frame delay
+            } 
+            else if (selectedMajor === 'biz') {
+                // Instantly pulse credit magnet: Pull closest coins to player
+                createBounceParticles(player.x + player.width/2, player.y + player.height/2, '#eab308');
+                coins.forEach(coin => {
+                    const dist = Math.hypot((coin.x - player.x), (coin.y - player.y));
+                    if (dist < 250 && !coin.collected) {
+                        // Slingshot coin toward player
+                        coin.magnetized = true;
+                    }
+                });
+                playSynthSound('coin');
+                player.activeAbilityCooldown = 60; // 1 sec cooldown
+            }
+            else if (selectedMajor === 'med') {
+                // Passive recovery active injection: Recover a point of HP if damaged
+                if (player.lives < player.maxLives) {
+                    player.lives++;
+                    updateHUD();
+                    playSynthSound('victory');
+                    createBounceParticles(player.x + player.width/2, player.y + player.height/2, '#10b981');
+                    player.activeAbilityCooldown = 400; // Large CD
+                }
+            }
+        }
+
+        function createBounceParticles(x, y, color) {
+            for (let i = 0; i < 8; i++) {
+                particles.push({
+                    x: x,
+                    y: y,
+                    vx: (Math.random() - 0.5) * 6,
+                    vy: (Math.random() - 0.5) * 6 - 2,
+                    size: Math.random() * 4 + 2,
+                    color: color,
+                    life: 30
+                });
+            }
+        }
+
+        function checkAABBCollision(rect1, rect2) {
+            return rect1.x < rect2.x + rect2.width &&
+                   rect1.x + rect1.width > rect2.x &&
+                   rect1.y < rect2.y + rect2.height &&
+                   rect1.y + rect1.height > rect2.y;
+        }
+
+        function resolvePlatformCollisions() {
+            player.isGrounded = false;
+            
+            platforms.forEach(plat => {
+                // Simple AABB checks
+                if (checkAABBCollision(player, plat)) {
+                    // Check if player falls on top of platform
+                    const playerBottom = player.y + player.height;
+                    const platTop = plat.y;
+                    
+                    // Allow falling through bottom, only land on tops
+                    if (playerBottom - player.vy <= platTop + 8 && player.vy >= 0) {
+                        player.y = platTop - player.height;
+                        player.vy = 0;
+                        player.isGrounded = true;
+                    }
+                }
+            });
+        }
+
+        function updateGame() {
+            if (gameState !== 'playing') return;
+
+            // Reduce cooldowns
+            if (player.invincibleFrames > 0) player.invincibleFrames--;
+            if (player.activeAbilityCooldown > 0) player.activeAbilityCooldown--;
+
+            // Horizontal Movement Physics
+            if (keys.left) {
+                player.vx = -player.speed;
+            } else if (keys.right) {
+                player.vx = player.speed;
+            } else {
+                player.vx *= FRICTION;
+                if (Math.abs(player.vx) < 0.1) player.vx = 0;
+            }
+
+            // Apply gravity
+            player.vy += GRAVITY;
+
+            // Apply position changes
+            player.x += player.vx;
+            player.y += player.vy;
+
+            // Level boundaries & death pits check
+            if (player.x < 0) player.x = 0;
+            if (player.x > LEVELS[currentLevelIndex].length - player.width) {
+                player.x = LEVELS[currentLevelIndex].length - player.width;
+            }
+
+            // Falls into the lily pond / subway tracks (Pits)
+            if (player.y > VIRTUAL_HEIGHT + 100) {
+                player.lives -= 1;
+                playSynthSound('hit');
+                if (player.lives <= 0) {
+                    triggerGameOver();
+                } else {
+                    // Respawn on closest secure spot
+                    player.x = Math.max(100, player.x - 300);
+                    player.y = 100;
+                    player.vx = 0;
+                    player.vy = 0;
+                    player.invincibleFrames = 90;
+                    updateHUD();
+                }
+            }
+
+            // Resolve landscape collisions
+            resolvePlatformCollisions();
+
+            // MAGNETIZED COINS LOGIC
+            coins.forEach(coin => {
+                if (coin.magnetized && !coin.collected) {
+                    const dx = player.x + player.width/2 - coin.x;
+                    const dy = player.y + player.height/2 - coin.y;
+                    const dist = Math.hypot(dx, dy);
+                    if (dist > 5) {
+                        coin.x += (dx / dist) * 12;
+                        coin.y += (dy / dist) * 12;
+                    }
+                }
+            });
+
+            // COIN COLLECTION CHECK
+            coins.forEach(coin => {
+                if (!coin.collected && checkAABBCollision(player, { x: coin.x - 8, y: coin.y - 8, width: 16, height: 16 })) {
+                    coin.collected = true;
+                    let payout = coin.value;
+                    if (selectedMajor === 'biz') payout *= 2; // Multiplier
+                    score += payout;
+                    updateHUD();
+                    playSynthSound('coin');
+                    createBounceParticles(coin.x, coin.y, '#fef08a');
+                }
+            });
+
+            // UPDATE PROJECTILES
+            projectiles.forEach((proj, pIdx) => {
+                proj.x += proj.vx;
+                // Cleanup out of bounds
+                if (proj.x < player.x - VIRTUAL_WIDTH || proj.x > player.x + VIRTUAL_WIDTH) {
+                    projectiles.splice(pIdx, 1);
+                }
+            });
+
+            // UPDATE ENEMIES & PROJECTILE INTERACTION
+            enemies.forEach((enemy, eIdx) => {
+                // Walk patrol patterns
+                enemy.x += enemy.speed;
+                if (enemy.x <= enemy.minX || enemy.x >= enemy.maxX - enemy.width) {
+                    enemy.speed *= -1;
+                }
+
+                // Interaction with player projectiles
+                projectiles.forEach((proj, pIdx) => {
+                    if (checkAABBCollision(proj, enemy)) {
+                        enemy.hp--;
+                        projectiles.splice(pIdx, 1);
+                        createBounceParticles(enemy.x + enemy.width/2, enemy.y + enemy.height/2, '#a7f3d0');
+                        playSynthSound('hit');
+
+                        if (enemy.hp <= 0) {
+                            enemies.splice(eIdx, 1);
+                            defeatedCount++;
+                            score += 50; // Extra credits for convincing students to go study
+                            updateHUD();
+                        }
+                    }
+                });
+
+                // Interaction with Player
+                if (checkAABBCollision(player, enemy)) {
+                    // Check if player jumps on top of enemy (Stomp!)
+                    const playerBottom = player.y + player.height;
+                    if (playerBottom - player.vy <= enemy.y + 12 && player.vy > 0) {
+                        // Stomped! Bounce up
+                        player.vy = player.jumpForce * 0.7;
+                        enemy.hp--;
+                        playSynthSound('hit');
+                        createBounceParticles(enemy.x + enemy.width/2, enemy.y + enemy.height/2, '#fca5a5');
+                        
+                        if (enemy.hp <= 0) {
+                            enemies.splice(eIdx, 1);
+                            defeatedCount++;
+                            score += 50;
+                            updateHUD();
+                        }
+                    } else if (player.invincibleFrames === 0) {
+                        // Damage player
+                        player.lives--;
+                        player.invincibleFrames = 60; // Hurt protection frames
+                        playSynthSound('hit');
+                        updateHUD();
+                        createBounceParticles(player.x + player.width/2, player.y + player.height/2, '#ef4444');
+
+                        if (player.lives <= 0) {
+                            triggerGameOver();
+                        }
+                    }
+                }
+            });
+
+            // UPDATE PARTICLES
+            particles.forEach((p, idx) => {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.life--;
+                if (p.life <= 0) particles.splice(idx, 1);
+            });
+
+            // CHECK DIPLOMA GOAL HIT
+            if (diplomaGoal && checkAABBCollision(player, diplomaGoal)) {
+                if (diplomaGoal.isUltimate) {
+                    triggerVictory();
+                } else {
+                    // Load next level phase
+                    playSynthSound('victory');
+                    loadLevel(currentLevelIndex + 1);
+                }
+            }
+        }
+
+        function renderGame() {
+            ctx.clearRect(0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
+
+            // Calculate parallax Camera offset focused on player
+            let cameraX = player.x - VIRTUAL_WIDTH / 3;
+            // Bound camera to level bounds
+            const currentLevelLength = LEVELS[currentLevelIndex].length;
+            if (cameraX < 0) cameraX = 0;
+            if (cameraX > currentLevelLength - VIRTUAL_WIDTH) {
+                cameraX = currentLevelLength - VIRTUAL_WIDTH;
+            }
+
+            // 1. Draw backgrounds with parallax scrolling
+            backgroundLayers.forEach(layer => {
+                layer.draw(cameraX);
+            });
+
+            ctx.save();
+            // Translate context coordinates relative to camera
+            ctx.translate(-cameraX, 0);
+
+            // 2. Draw Gateway/Goals (Buildings)
+            if (diplomaGoal) {
+                // Draw majestic gateway columns
+                ctx.fillStyle = '#f1f5f9';
+                ctx.fillRect(diplomaGoal.x, diplomaGoal.y - 40, 12, 120);
+                ctx.fillRect(diplomaGoal.x + diplomaGoal.width - 12, diplomaGoal.y - 40, 12, 120);
+                
+                // Pediment roof (triangle)
+                ctx.fillStyle = '#cbd5e1';
+                ctx.beginPath();
+                ctx.moveTo(diplomaGoal.x - 10, diplomaGoal.y - 40);
+                ctx.lineTo(diplomaGoal.x + diplomaGoal.width/2, diplomaGoal.y - 70);
+                ctx.lineTo(diplomaGoal.x + diplomaGoal.width + 10, diplomaGoal.y - 40);
+                ctx.closePath();
+                ctx.fill();
+
+                // Gold scroll/diploma in ultimate level
+                if (diplomaGoal.isUltimate) {
+                    ctx.fillStyle = '#FFD700';
+                    ctx.beginPath();
+                    ctx.arc(diplomaGoal.x + diplomaGoal.width/2, diplomaGoal.y + 20, 15, 0, Math.PI*2);
+                    ctx.fill();
+                    // Ribbon
+                    ctx.fillStyle = '#800000';
+                    ctx.fillRect(diplomaGoal.x + diplomaGoal.width/2 - 4, diplomaGoal.y + 10, 8, 20);
+                }
+
+                // Gateway labels
+                ctx.fillStyle = '#ffffff';
+                ctx.font = '8px "Press Start 2P"';
+                ctx.textAlign = 'center';
+                ctx.fillText(diplomaGoal.text, diplomaGoal.x + diplomaGoal.width / 2, diplomaGoal.y - 85);
+            }
+
+            // 3. Draw Platforms
+            platforms.forEach(plat => {
+                if (plat.type === 'brick') {
+                    ctx.fillStyle = '#800000'; // Brick Red
+                    ctx.fillRect(plat.x, plat.y, plat.width, plat.height);
+                    // Stylized lines for brick effect
+                    ctx.strokeStyle = 'rgba(255,215,0,0.3)';
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(plat.x, plat.y, plat.width, plat.height);
+                } 
+                else if (plat.type === 'book') {
+                    // Library books platforms stacked
+                    ctx.fillStyle = '#3b82f6'; // Blue book spine
+                    ctx.fillRect(plat.x, plat.y, plat.width, plat.height);
+                    ctx.fillStyle = '#ffffff'; // Pages
+                    ctx.fillRect(plat.x + 4, plat.y + 4, plat.width - 8, plat.height - 8);
+                    ctx.fillStyle = '#ef4444'; // Red bookmark ribbon hanger
+                    ctx.fillRect(plat.x + 20, plat.y, 8, 18);
+                } 
+                else if (plat.type === 'lily') {
+                    // Lily pad texture
+                    ctx.fillStyle = '#15803d'; // Green leaf
+                    ctx.beginPath();
+                    ctx.arc(plat.x + plat.width/2, plat.y + 10, plat.width/2, 0, Math.PI * 2);
+                    ctx.fill();
+                    // Cut line
+                    ctx.strokeStyle = '#052e16';
+                    ctx.beginPath();
+                    ctx.moveTo(plat.x + plat.width/2, plat.y + 10);
+                    ctx.lineTo(plat.x + plat.width, plat.y + 5);
+                    ctx.stroke();
+                } 
+                else {
+                    ctx.fillStyle = '#64748b'; // standard grey slab
+                    ctx.fillRect(plat.x, plat.y, plat.width, plat.height);
+                    ctx.strokeStyle = '#334155';
+                    ctx.strokeRect(plat.x, plat.y, plat.width, plat.height);
+                }
+            });
+
+            // 4. Draw Coins (Campus ID Cards)
+            coins.forEach(coin => {
+                if (!coin.collected) {
+                    ctx.save();
+                    // Procedural Campus ID drawing
+                    ctx.fillStyle = '#eab308'; // Gold accent
+                    ctx.fillRect(coin.x - 8, coin.y - 12, 16, 22);
+                    // Blue banner
+                    ctx.fillStyle = '#1d4ed8';
+                    ctx.fillRect(coin.x - 8, coin.y - 12, 16, 6);
+                    // Inner photo placeholder
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(coin.x - 5, coin.y - 2, 10, 10);
+                    ctx.restore();
+                }
+            });
+
+            // 5. Draw Projectiles
+            projectiles.forEach(proj => {
+                ctx.fillStyle = proj.color;
+                ctx.font = 'bold 16px monospace';
+                ctx.fillText(proj.text, proj.x, proj.y + 10);
+            });
+
+            // 6. Draw Student Enemies
+            enemies.forEach(enemy => {
+                ctx.save();
+                
+                // Base colors depending on major
+                if (enemy.type === 'chemistry') {
+                    // Crazy lab scientist look
+                    ctx.fillStyle = '#e2e8f0'; // Lab coat
+                    ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+                    // Green crazy hair
+                    ctx.fillStyle = '#22c55e';
+                    ctx.fillRect(enemy.x - 2, enemy.y - 10, enemy.width + 4, 14);
+                    // Flask in hand
+                    ctx.fillStyle = '#a855f7';
+                    ctx.beginPath();
+                    ctx.arc(enemy.x + (enemy.speed > 0 ? enemy.width + 2 : -2), enemy.y + 24, 6, 0, Math.PI*2);
+                    ctx.fill();
+                } 
+                else if (enemy.type === 'philosophy') {
+                    // Turtleneck, looking confused
+                    ctx.fillStyle = '#0f172a'; // black turtleneck
+                    ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+                    // Thinking hand
+                    ctx.fillStyle = '#ffedd5';
+                    ctx.fillRect(enemy.x + (enemy.speed > 0 ? enemy.width - 6 : 0), enemy.y + 22, 6, 6);
+                    // Question marks floating on head
+                    ctx.fillStyle = '#eab308';
+                    ctx.font = '14px monospace';
+                    ctx.fillText('?', enemy.x + enemy.width/2 - 4, enemy.y - 6);
+                } 
+                else if (enemy.type === 'biology') {
+                    // Frog cap / green biology theme
+                    ctx.fillStyle = '#16a34a';
+                    ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+                    ctx.fillStyle = '#ffedd5';
+                    ctx.fillRect(enemy.x + 4, enemy.y + 12, enemy.width - 8, enemy.height - 18);
+                    // Giant leaf shield
+                    ctx.fillStyle = '#4ade80';
+                    ctx.fillRect(enemy.x - 4, enemy.y + 16, 8, 20);
+                } 
+                else if (enemy.type === 'film') {
+                    // Vintage director hat + camera
+                    ctx.fillStyle = '#451a03'; // Brown coat
+                    ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+                    ctx.fillStyle = '#1e293b'; // Camera gear
+                    ctx.fillRect(enemy.x - 8, enemy.y + 8, 12, 10);
+                }
+
+                ctx.restore();
+            });
+
+            // 7. Draw Particles
+            particles.forEach(p => {
+                ctx.fillStyle = p.color;
+                ctx.fillRect(p.x, p.y, p.size, p.size);
+            });
+
+            // 8. Draw Player (Customized based on selected Major)
+            ctx.save();
+            // Blinking effect if invincible
+            if (player.invincibleFrames === 0 || Math.floor(player.invincibleFrames / 4) % 2 === 0) {
+                // Color mapping from configuration DB
+                const colorTheme = MAJORS_DB[selectedMajor].color;
+                
+                // Draw Student Body (Backpack / Clothes)
+                ctx.fillStyle = colorTheme;
+                ctx.fillRect(player.x, player.y + 12, player.width, player.height - 12);
+                
+                // Head
+                ctx.fillStyle = '#fbcfe8'; // skin tone
+                ctx.fillRect(player.x + 6, player.y, player.width - 12, 12);
+                
+                // Draw custom major accessories
+                if (selectedMajor === 'cs') {
+                    // Thick nerdy glasses
+                    ctx.fillStyle = '#000000';
+                    ctx.fillRect(player.x + 8, player.y + 3, player.width - 16, 3);
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(player.x + 10, player.y + 4, 4, 3);
+                    ctx.fillRect(player.x + 18, player.y + 4, 4, 3);
+                } 
+                else if (selectedMajor === 'art') {
+                    // Artsy Parisian Beret
+                    ctx.fillStyle = '#f43f5e';
+                    ctx.beginPath();
+                    ctx.ellipse(player.x + player.width/2, player.y, 16, 6, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                } 
+                else if (selectedMajor === 'med') {
+                    // Stethoscope / White scrubs coat
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(player.x, player.y + 12, 6, player.height - 12);
+                    ctx.fillRect(player.x + player.width - 6, player.y + 12, 6, player.height - 12);
+                } 
+                else if (selectedMajor === 'biz') {
+                    // Tie & Briefcase
+                    ctx.fillStyle = '#0f172a'; // Suit tie
+                    ctx.fillRect(player.x + player.width/2 - 3, player.y + 12, 6, 12);
+                }
+
+                // Backpack (indicates student status)
+                ctx.fillStyle = '#475569';
+                ctx.fillRect(player.facingLeft ? player.x + player.width - 6 : player.x, player.y + 16, 6, 20);
+            }
+            ctx.restore();
+
+            ctx.restore(); // Restore offset configuration translation
+        }
+
+        let paused = false;
+        function togglePause() {
+            paused = !paused;
+            const btnIcon = document.getElementById('btn-pause-icon');
+            if (paused) {
+                btnIcon.setAttribute('data-lucide', 'play');
+                // Temporarily halt the update loop while rendering static scenes
+            } else {
+                btnIcon.setAttribute('data-lucide', 'pause');
+            }
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        }
+
+        function triggerGameOver() {
+            gameState = 'game-over';
+            document.getElementById('screen-game-over').classList.remove('hidden');
+            document.getElementById('summary-major').innerText = MAJORS_DB[selectedMajor].name;
+            document.getElementById('summary-credits').innerText = score;
+            document.getElementById('summary-defeated').innerText = defeatedCount;
+        }
+
+        function triggerVictory() {
+            gameState = 'victory';
+            document.getElementById('screen-victory').classList.remove('hidden');
+            document.getElementById('victory-major').innerText = MAJORS_DB[selectedMajor].name;
+            document.getElementById('victory-credits').innerText = `${score} Credits`;
+            document.getElementById('victory-defeated').innerText = `${defeatedCount} Majors Met`;
+            playSynthSound('victory');
+        }
+
+        function restartGame() {
+            document.getElementById('screen-game-over').classList.add('hidden');
+            document.getElementById('screen-victory').classList.add('hidden');
+            document.getElementById('screen-select').classList.remove('hidden');
+            gameState = 'select';
+        }
+
+        function gameLoop() {
+            if (!paused) {
+                updateGame();
+            }
+            renderGame();
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Start initialization on window load
+        window.onload = function () {
+            setupMobileControls();
+            gameLoop();
+        }
+    </script>
+</body>
+</html>
